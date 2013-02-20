@@ -2597,7 +2597,17 @@ public class OpenStreetMapGraphBuilderImpl implements GraphBuilder {
                 } 
 
                 if (iv == null) {
-                    iv = new IntersectionVertex(graph, label, coordinate.x, coordinate.y, label);
+                    boolean traffic = "traffic_signals".equals(highway);
+                    /*
+                     * // The node tags are too unreliable in Montreal for this to work; 
+                     * // better just to assume each intersection incurs a stop sign cost 
+                     * boolean freeFlowing = !(traffic || "stop".equals(highway) || 
+                     * "mini_roundabout".equals(highway) || "give_way".equals(highway) || 
+                     * "crossing" .equals(highway));
+                     */
+                    boolean freeFlowing = false;
+                    iv = new IntersectionVertex(graph, label, coordinate.x,
+                            coordinate.y, label, freeFlowing, traffic);
                 }
                 intersectionNodes.put(nid, iv);
                 endpoints.add(iv);

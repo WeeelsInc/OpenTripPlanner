@@ -58,7 +58,8 @@ public class IntersectionVertex extends StreetVertex {
             return 0;
         
         // hack to infer freeflowing (freeway) operation
-        if (fromSpeed > 25 && toSpeed > 25 && Math.abs(fromSpeed - toSpeed) < 7)
+        if(!trafficLight && fromSpeed > 19 && toSpeed > 19
+                && Math.abs(fromSpeed - toSpeed) < 7)
             return 0;
         
         if (mode != TraverseMode.CAR) {
@@ -153,10 +154,15 @@ public class IntersectionVertex extends StreetVertex {
         }
     }
 
-    public IntersectionVertex(Graph g, String label, double x, double y, String name) {
+    public IntersectionVertex(Graph g, String label, double x, double y,
+            String name, boolean freeFlowing, boolean trafficLight) {
         super(g, label, x, y, name);
-        freeFlowing = true;
-        trafficLight = false;
+        this.freeFlowing = freeFlowing;
+        this.trafficLight = trafficLight;
+    }
+
+    public IntersectionVertex(Graph g, String label, double x, double y, String name) {
+        this(g, label, x, y, name, true, false);
     }
     
     public IntersectionVertex(Graph g, String label, double x, double y) {
