@@ -212,11 +212,14 @@ public class WayPropertySet {
         
         if (way.hasTag("maxspeed") && speed == -1)
             speed = getMetersSecondFromSpeed(way.getTag("maxspeed"));
-                    
+
+        if(speed != -1)
+            return speed;
+
         int bestScore = 0;
         float bestSpeed = -1;
         int score;
-        
+
         for (SpeedPicker picker : speedPickers) {
             OSMSpecifier specifier = picker.getSpecifier();
             score = specifier.matchScore(way);
