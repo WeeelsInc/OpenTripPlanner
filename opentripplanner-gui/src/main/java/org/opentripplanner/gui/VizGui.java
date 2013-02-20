@@ -44,6 +44,7 @@ import java.util.TimeZone;
 import javassist.Modifier;
 
 import javax.swing.AbstractListModel;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -80,6 +81,7 @@ import org.opentripplanner.routing.impl.GraphServiceImpl;
 import org.opentripplanner.routing.impl.RetryingPathServiceImpl;
 import org.opentripplanner.routing.services.StreetVertexIndexService;
 import org.opentripplanner.routing.spt.GraphPath;
+import org.opentripplanner.routing.vertextype.IntersectionVertex;
 
 import com.beust.jcommander.internal.Sets;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -233,6 +235,8 @@ public class VizGui extends JFrame implements VertexSelectionListener {
     private JCheckBox ferryCheckBox;
 
     private JCheckBox transitCheckBox;
+    
+    private JCheckBox carCheckBox;
 
     private JTextField searchDate;
     
@@ -366,7 +370,10 @@ public class VizGui extends JFrame implements VertexSelectionListener {
         routingPanel.add(ferryCheckBox);
         transitCheckBox = new JCheckBox("transit");
         routingPanel.add(transitCheckBox);
-        
+        carCheckBox = new JCheckBox("car");
+        routingPanel.add(carCheckBox);
+        routingPanel.add(Box.createHorizontalGlue());
+
         // row: boarding penalty
         JLabel boardPenaltyLabel = new JLabel("Boarding penalty (min):");
         routingPanel.add(boardPenaltyLabel);
@@ -841,6 +848,8 @@ public class VizGui extends JFrame implements VertexSelectionListener {
         modeSet.setFerry(ferryCheckBox.isSelected());
         modeSet.setTrainish(trainCheckBox.isSelected());
         modeSet.setBusish(busCheckBox.isSelected());
+        modeSet.setCar(carCheckBox.isSelected());
+
         // must set generic transit mode last, and only when it is checked
         // otherwise 'false' will clear trainish and busish 
         if (transitCheckBox.isSelected())
@@ -871,7 +880,20 @@ public class VizGui extends JFrame implements VertexSelectionListener {
         GraphPath gp = paths.get(0);
         for (State s : gp.states) {
             System.out.print(s.toString() + " <- ");
-            System.out.println(s.getBackEdge());
+            if(s.getBackEdge() != null) {
+                System.out.println(s.getBackEdge());
+                System.out.println("Distance: " + s.getBackEdge().getDistance()
+                      + ", time: " + s.getTimeDeltaSec() + ", effective speed: "
+                      + s.getBackEdge().getDistance() / s.getTimeDeltaSec());
+                System.out.println("Weight delta: "
+                      + s.getWeightDelta()
+                      + ", free: "
+                      + ((IntersectionVertex) s.getBackEdge().getToVertex())
+                            .isFreeFlowing()
+                      + ", traffic light: "
+                      + ((IntersectionVertex) s.getBackEdge().getToVertex())
+                            .isTrafficLight());
+             }
         }
         showGraph.highlightGraphPath(gp);
     }
