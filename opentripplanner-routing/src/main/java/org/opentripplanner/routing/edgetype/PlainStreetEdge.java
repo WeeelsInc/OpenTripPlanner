@@ -322,10 +322,12 @@ public class PlainStreetEdge extends StreetEdge implements Cloneable {
                 */
             }
         }
-        if (isStairs()) {
-            weight *= options.stairsReluctance;
-        } else {
-            weight *= options.walkReluctance;
+        if(traverseMode != TraverseMode.CAR) {
+            if(isStairs()) {
+                weight *= options.stairsReluctance;
+            } else {
+                weight *= options.walkReluctance;
+            }
         }
         
         StateEditor s1 = s0.edit(this);
